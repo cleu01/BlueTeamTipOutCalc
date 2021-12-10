@@ -1,11 +1,12 @@
 # Blue team
 # Tip out Calc
 
+import PySimpleGUI as sg
 import csv
 
-shiftsClosed = 'Shifts_Closed_2021_12_02.csv'
-timeEntries = 'TimeEntries_2021_12_02.csv'
 
+
+#imports time entry csv
 def timeEntriesIn(timeEntries):
     TimeArray = []
     with open(timeEntries, newline='') as csv_file:
@@ -13,6 +14,7 @@ def timeEntriesIn(timeEntries):
         
     return TimeArray
 
+#puts time list csv in an array, may be unneccessary but was a part of the process in my head
 def TimeList(TimeArray):
     
     TimeList = []
@@ -21,6 +23,7 @@ def TimeList(TimeArray):
             TimeList.append(TimeArray[row][column])
     return TimeList
 
+#imports shifts closed csv
 def dataIn(shiftsClosed):
     dataArray = []
     with open(shiftsClosed, newline='') as csv_file:
@@ -28,6 +31,7 @@ def dataIn(shiftsClosed):
         
     return dataArray
 
+#puts shifts closed csv in a list
 def newList(dataIn):
     
     dataList = []
@@ -36,7 +40,7 @@ def newList(dataIn):
             dataList.append(dataIn[row][column])
     return dataList
 
-
+#calculates Tip Share Total from shifts closed csv
 def tipShareTotal(dataList):
     total = 0
     index = dataList.index('Tip Share Total')
@@ -45,6 +49,7 @@ def tipShareTotal(dataList):
         total = total + float(dataList[i])
     return total 
 
+#Generates a list of employee's from time entries csv
 def employeeList(TimeList):
     employeeIndex = TimeList.index('Employee')
     jobIDIndex = TimeList.index('Job Id')
@@ -113,44 +118,81 @@ def tipSharePayPerPerson(HoursWorked, PerHourPay):
         totalPay.append(total)
     return totalPay
 
+#Temp Function to show possible outputs
 def printNameAndPay(NameList, PayList, JobTitle):
+    output = []
     for i in range(len(NameList)):
-        print(NameList[i], "is a ", JobTitle, "and got paid ", PayList[i])
-    
+        output.append(NameList[i] + "is a " + JobTitle + " and got paid "+ str(PayList[i]))
+    return output
+
 
 def main():
-    Bartender = 'Bartender'
-    Host = 'Host'
-    Busser = 'Busser'
-    Runner = 'Runner'
-    dataArray = dataIn(shiftsClosed)
-    dataList = newList(dataArray)
-    timeArray = timeEntriesIn(timeEntries)
-    timeList = TimeList(timeArray)
-    totalTipShare = tipShareTotal(dataList) 
-    TipSharePerJobTitle = tipSharePerJobTitle(totalTipShare)
-    listOfEmployees = employeeList(timeList)
-    listOfJobTitles = jobTitleList(timeList)
-    bartenderIndexes = JobTitleSearch(listOfJobTitles, Bartender)
-    hostIndexes = JobTitleSearch(listOfJobTitles, Host)
-    busserIndexes = JobTitleSearch(listOfJobTitles, Busser)
-    runnerIndexes = JobTitleSearch(listOfJobTitles, Runner)
-    HoursWorkedList = hoursWorked(timeList)
-    HoursWorkedByBartender = hoursSearch(HoursWorkedList, bartenderIndexes)
-    HoursWorkedByBusser = hoursSearch(HoursWorkedList, busserIndexes)
-    HoursWorkedByRunner = hoursSearch(HoursWorkedList, runnerIndexes)
-    BartenderNameByHours = employeeNamebyHours(listOfEmployees, bartenderIndexes)
-    BusserNameByHours = employeeNamebyHours(listOfEmployees, busserIndexes)
-    RunnerNameByHours = employeeNamebyHours(listOfEmployees, runnerIndexes)
-    BartenderTipSharePerHour = tipSharePerHour(TipSharePerJobTitle, HoursWorkedByBartender)
-    RunnerTipSharePerHour = tipSharePerHour(TipSharePerJobTitle, HoursWorkedByRunner)
-    BusserTipSharePerHour = tipSharePerHour(TipSharePerJobTitle, HoursWorkedByBusser)
-    BartenderTotalPayList = tipSharePayPerPerson(HoursWorkedByBartender, BartenderTipSharePerHour)
-    RunnerTotalPayList = tipSharePayPerPerson(HoursWorkedByRunner, RunnerTipSharePerHour)
-    BusserTotalPayList = tipSharePayPerPerson(HoursWorkedByBusser, BusserTipSharePerHour)
-    
-    printNameAndPay(BartenderNameByHours, BartenderTotalPayList, Bartender)
-    printNameAndPay(RunnerNameByHours, RunnerTotalPayList, Runner)
-    printNameAndPay(BusserNameByHours, BusserTotalPayList, Busser)
+    layout = [ 
+            [sg.Text(size = (50,10), key='__OUTPUT0__')],
+            [sg.Text(size = (50,10), key='__OUTPUT1__')],
+            [sg.Text(size = (50,10), key='__OUTPUT2__')],
+            [sg.Text('Shifts Closed CSV')],
+            [sg.Input(), sg.FileBrowse()], 
+            [sg.Text('Time Entries CSV')],
+            [sg.Input(), sg.FileBrowse()],
+            [sg.ReadButton('OPEN'), sg.Button('Exit')]
+         ]
+ 
 
-main()
+#create the window
+    window = sg.Window('Tipout Calc', layout, size= (900, 800))
+
+    while True:
+
+        event, values = window.read() 
+        value0 = event, ''.join(values[0])
+        value1 = event, ''.join(values[1])  # Read the event that happened and the values dictionary
+        
+        if event == sg.WIN_CLOSED or event == 'Exit':     # If user closed window with X or if user clicked "Exit" button then exit
+            break
+        if event == 'OPEN':
+            #I need to make these inputs from a UI
+            shiftsClosed = value0[1]
+            timeEntries = value1[1]
+
+            Bartender = 'Bartender'
+            Host = 'Host'
+            Busser = 'Busser'
+            Runner = 'Runner'
+            dataArray = dataIn(shiftsClosed)
+            dataList = newList(dataArray)
+            timeArray = timeEntriesIn(timeEntries)
+            timeList = TimeList(timeArray)
+            totalTipShare = tipShareTotal(dataList) 
+            TipSharePerJobTitle = tipSharePerJobTitle(totalTipShare)
+            listOfEmployees = employeeList(timeList)
+            listOfJobTitles = jobTitleList(timeList)
+            bartenderIndexes = JobTitleSearch(listOfJobTitles, Bartender)
+            hostIndexes = JobTitleSearch(listOfJobTitles, Host)
+            busserIndexes = JobTitleSearch(listOfJobTitles, Busser)
+            runnerIndexes = JobTitleSearch(listOfJobTitles, Runner)
+            HoursWorkedList = hoursWorked(timeList)
+            HoursWorkedByBartender = hoursSearch(HoursWorkedList, bartenderIndexes)
+            HoursWorkedByBusser = hoursSearch(HoursWorkedList, busserIndexes)
+            HoursWorkedByRunner = hoursSearch(HoursWorkedList, runnerIndexes)
+            BartenderNameByHours = employeeNamebyHours(listOfEmployees, bartenderIndexes)
+            BusserNameByHours = employeeNamebyHours(listOfEmployees, busserIndexes)
+            RunnerNameByHours = employeeNamebyHours(listOfEmployees, runnerIndexes)
+            BartenderTipSharePerHour = tipSharePerHour(TipSharePerJobTitle, HoursWorkedByBartender)
+            RunnerTipSharePerHour = tipSharePerHour(TipSharePerJobTitle, HoursWorkedByRunner)
+            BusserTipSharePerHour = tipSharePerHour(TipSharePerJobTitle, HoursWorkedByBusser)
+            BartenderTotalPayList = tipSharePayPerPerson(HoursWorkedByBartender, BartenderTipSharePerHour)
+            RunnerTotalPayList = tipSharePayPerPerson(HoursWorkedByRunner, RunnerTipSharePerHour)
+            BusserTotalPayList = tipSharePayPerPerson(HoursWorkedByBusser, BusserTipSharePerHour)
+            
+            display0 = printNameAndPay(BartenderNameByHours, BartenderTotalPayList, Bartender)
+            display1 = printNameAndPay(RunnerNameByHours, RunnerTotalPayList, Runner)
+            display2 = printNameAndPay(BusserNameByHours, BusserTotalPayList, Busser)
+
+            window['__OUTPUT0__'].update(display0)
+            window['__OUTPUT1__'].update(display1)
+            window['__OUTPUT2__'].update(display2)
+            
+    window.close()
+
+main()    
