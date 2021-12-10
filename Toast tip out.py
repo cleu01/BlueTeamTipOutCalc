@@ -30,11 +30,37 @@ def tipShareTotal(dataList):
         total = total + float(dataList[i])
     return total 
 
+def employeeList(dataList):
+    employeeIndex = dataList.index('Employee')
+    jobTitleIndex = dataList.index('Job Title')
+    listEmployees = []
+    for i in range (employeeIndex +1, jobTitleIndex):
+        listEmployees.append(dataList[i])
+    return listEmployees
+
+def jobTitleList(dataList):
+    jobTitleIndex = dataList.index('Job Title')
+    inDateIndex = dataList.index('In Date')
+    listJobTitles = []
+    for i in range (jobTitleIndex +1, inDateIndex):
+        listJobTitles.append(dataList[i])
+    return listJobTitles
+
+def JobTitleSearch(listOfJobTitles, key):
+    indexes = []
+    for i in range (len(listOfJobTitles)):
+        if key == listOfJobTitles[i]:
+            indexes.append(i)
+    return indexes
 
 def main():
+    Bartender = 'Bartender'
     dataArray = dataIn(infile)
     dataList = newList(dataArray)
-    totalTipShare = tipShareTotal(dataList)
-    print(totalTipShare)    
+    totalTipShare = tipShareTotal(dataList) 
+    listOfEmployees = employeeList(dataList)
+    listOfJobTitles = jobTitleList(dataList)
+    bartenderIndexes = JobTitleSearch(listOfJobTitles, Bartender)
+    
 
 main()
