@@ -3,6 +3,9 @@
 
 import PySimpleGUI as sg
 import csv
+from tkinter import *
+from PySimpleGUI.PySimpleGUI import Column
+
 
 
 
@@ -127,7 +130,9 @@ def printNameAndPay(NameList, PayList, JobTitle):
 
 
 def main():
+    menu_def = [['&Programs', ['Sales Forcasting', '---', '&Floor Design']]]
     layout = [ 
+            [sg.Menu(menu_def, tearoff=False, key='-Menu-')],
             [sg.Text(size = (50,10), key='__OUTPUT0__')],
             [sg.Text(size = (50,10), key='__OUTPUT1__')],
             [sg.Text(size = (50,10), key='__OUTPUT2__')],
@@ -136,6 +141,7 @@ def main():
             [sg.Text('Time Entries CSV')],
             [sg.Input(), sg.FileBrowse()],
             [sg.ReadButton('OPEN'), sg.Button('Exit')]
+            
          ]
  
 
@@ -150,7 +156,7 @@ def main():
         
         if event == sg.WIN_CLOSED or event == 'Exit':     # If user closed window with X or if user clicked "Exit" button then exit
             break
-        if event == 'OPEN':
+        elif event == 'OPEN':
             #I need to make these inputs from a UI
             shiftsClosed = value0[1]
             timeEntries = value1[1]
@@ -192,6 +198,12 @@ def main():
             window['__OUTPUT0__'].update(display0)
             window['__OUTPUT1__'].update(display1)
             window['__OUTPUT2__'].update(display2)
+
+        elif event == 'Sales Forcasting':
+            import salesForcasting
+
+        elif event == 'Floor Design':
+            import FloorDemo
             
     window.close()
 
