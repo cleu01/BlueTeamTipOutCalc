@@ -5,7 +5,7 @@ window = Tk()
 window.title("Event Floor Plan")
 window.geometry('1168x730')
 window.config(bg="white")
-img = ImageTk.PhotoImage(file='unknown.png', master = window)
+img = ImageTk.PhotoImage(file='Banquetroom_1168x730.png', master = window)
 photolabel = Label(window,image=img)
 photolabel.place(x=0,y=0)
 
